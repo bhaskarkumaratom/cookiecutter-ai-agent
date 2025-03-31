@@ -1,0 +1,37 @@
+name: CD - Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Configure GCloud
+        run: |
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+          gcloud auth configure-docker
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/ai-agent .
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/ai-agent
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ai-agent \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/ai-agent \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated
