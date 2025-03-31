@@ -1,0 +1,7 @@
+{
+    "project_name": "ai_agent",
+    "description": "AI Agent using LangChain + LangGraph + FastAPI + Gemini AI",
+    "author_name": "Your Name",
+    "google_api_key": "your-google-ai-key",
+    "serpapi_api_key": "your-serpapi-key"
+}
